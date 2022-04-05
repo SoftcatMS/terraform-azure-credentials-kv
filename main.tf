@@ -17,9 +17,9 @@ locals {
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "keyvault" {
-  #checkov:skip=CKV_AZURE_42:Ensure the key vault is recoverable
-  #checkov:skip=CKV_AZURE_109:Ensure key vault allows firewall rules settings
-  #checkov:skip=CKV_AZURE_110:Ensure that key vault enables purge protection
+  #checkov:skip=CKV_AZURE_42:Ensure the key vault is recoverable 
+  #checkov:skip=CKV_AZURE_109:Ensure key vault allows firewall rules settings 
+  #checkov:skip=CKV_AZURE_110:Ensure that key vault enables purge protection 
   depends_on                  = [azurerm_resource_group.kv-rg]
   name                        = lower(join("", [var.key_vault_name, (local.suffix)]))
   location                    = var.location
@@ -59,6 +59,39 @@ resource "azurerm_key_vault" "keyvault" {
   }
 
   tags = var.tags
+}
+
+
+resource "tls_private_key" "softcat_key" {
+  algorithm = "RSA"
+  rsa_bits  = "4096"
+}
+
+resource "azurerm_key_vault_secret" "add_softcat_private_key" {
+  #checkov:skip=CKV_AZURE_41:Ensure AKV secrets have an expiration date set
+  name         = "Softcat-Bastion-Private-Key"
+  value        = tls_private_key.softcat_key.private_key_openssh
+  content_type = "ssh-key"
+  key_vault_id = azurerm_key_vault.keyvault.id
+  depends_on   = [azurerm_key_vault.keyvault]
+
+  lifecycle {
+    ignore_changes = [value] #Ignore so that key can be handled via console. This is used fo rinitial deployment
+  }
+
+}
+
+resource "azurerm_key_vault_secret" "add_softcat_public_key" {
+  #checkov:skip=CKV_AZURE_41:Ensure AKV secrets have an expiration date set
+  name         = "Softcat-Bastion-Public-Key"
+  value        = tls_private_key.softcat_key.public_key_openssh
+  content_type = "ssh-key"
+  key_vault_id = azurerm_key_vault.keyvault.id
+  depends_on   = [azurerm_key_vault.keyvault]
+
+  lifecycle {
+    ignore_changes = [value] #Ignore so that key can be handled via console. This is used fo rinitial deployment
+  }
 
 }
 
@@ -76,4 +109,6 @@ resource "azurerm_key_vault_secret" "add_password" {
   content_type = "password"
   key_vault_id = azurerm_key_vault.keyvault.id
   depends_on   = [azurerm_key_vault.keyvault]
+
 }
+

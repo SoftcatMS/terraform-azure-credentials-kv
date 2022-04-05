@@ -50,7 +50,7 @@ stages:
           backendServiceArm: 'sandbox-terraform-testing-spn'
           backendAzureRmResourceGroupName: 'rg-terraform-modules-state'
           backendAzureRmStorageAccountName: 'softcatmodulestate'
-          backendAzureRmContainerName: 'tf-modules-azure-loadbalancer-basic'
+          backendAzureRmContainerName: 'tf-modules-azure-credentials-kv-basic'
           backendAzureRmKey: 'terraform.tfstate'
 
       - task: TerraformTaskV2@2
@@ -85,7 +85,7 @@ stages:
           backendServiceArm: 'sandbox-terraform-testing-spn'
           backendAzureRmResourceGroupName: 'rg-terraform-modules-state'
           backendAzureRmStorageAccountName: 'softcatmodulestate'
-          backendAzureRmContainerName: 'tf-modules-azure-loadbalancer-advanced'
+          backendAzureRmContainerName: 'tf-modules-azure-credentials-kv-advanced'
           backendAzureRmKey: 'terraform.tfstate'
 
       - task: TerraformTaskV2@2
