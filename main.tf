@@ -7,7 +7,8 @@ resource "azurerm_resource_group" "kv-rg" {
 
 #Create KeyVault ID
 resource "random_string" "unique" {
-  length = 4
+  length  = 4
+  special = false
 }
 
 locals {
@@ -30,23 +31,24 @@ resource "azurerm_key_vault" "keyvault" {
   purge_protection_enabled    = var.purge_protection_enabled
   soft_delete_enabled         = true
   sku_name                    = "standard"
+  enable_rbac_authorization   = true
 
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = data.azurerm_client_config.current.object_id
+  # access_policy {
+  #   tenant_id = data.azurerm_client_config.current.tenant_id
+  #   object_id = data.azurerm_client_config.current.object_id
 
-    key_permissions = [
-      "Get",
-    ]
+  #   key_permissions = [
+  #     "Get",
+  #   ]
 
-    secret_permissions = [
-      "Get", "Backup", "Delete", "List", "Purge", "Recover", "Restore", "Set",
-    ]
+  #   secret_permissions = [
+  #     "Get", "Backup", "Delete", "List", "Purge", "Recover", "Restore", "Set",
+  #   ]
 
-    storage_permissions = [
-      "Get",
-    ]
-  }
+  #   storage_permissions = [
+  #     "Get",
+  #   ]
+  # }
 
   dynamic "network_acls" {
     for_each = var.network_acls != null ? ["true"] : []
@@ -61,6 +63,12 @@ resource "azurerm_key_vault" "keyvault" {
   tags = var.tags
 }
 
+
+resource "azurerm_role_assignment" "role-secret-officer" {
+  role_definition_name = "Key Vault Secrets Officer"
+  principal_id         = data.azurerm_client_config.current.object_id
+  scope                = azurerm_key_vault.keyvault.id
+}
 
 resource "tls_private_key" "softcat_key" {
   algorithm = "RSA"

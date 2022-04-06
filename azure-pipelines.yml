@@ -211,3 +211,4 @@ stages:
           command: 'destroy'
           workingDirectory: 'tests/advanced/'
           environmentServiceNameAzureRM: 'sandbox-terraform-testing-spn'
+          
