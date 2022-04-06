@@ -1,8 +1,8 @@
 module "credentials" {
   source = "../../"
 
-  key_vault_name           = "password-basic-kv"
-  random_suffix            = false
+  key_vault_name           = "basic-kv"
+  random_suffix            = true
   location                 = "uksouth"
   resource_group_name      = "password-basic-kv-rg"
   purge_protection_enabled = false
