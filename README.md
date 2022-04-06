@@ -53,9 +53,12 @@ No modules.
 |------|------|
 | [azurerm_key_vault.keyvault](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault) | resource |
 | [azurerm_key_vault_secret.add_password](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_secret) | resource |
+| [azurerm_key_vault_secret.add_softcat_private_key](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_secret) | resource |
+| [azurerm_key_vault_secret.add_softcat_public_key](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_secret) | resource |
 | [azurerm_resource_group.kv-rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
 | [random_password.gen_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [random_string.unique](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
+| [tls_private_key.softcat_key](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
 | [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) | data source |
 
 ## Inputs
@@ -76,7 +79,8 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_id"></a> [id](#output\_id) | The ID of password Key Vault |
-| <a name="output_passwords"></a> [passwords](#output\_passwords) | A mapping of password names and URIs. 
+| <a name="output_passwords"></a> [passwords](#output\_passwords) | A mapping of password names and URIs. |
+| <a name="output_softcat_public_ssh_key"></a> [softcat\_public\_ssh\_key](#output\_softcat\_public\_ssh\_key) | Public key used to connect to VMs via Bastion. |
 
 ## Contributing
 

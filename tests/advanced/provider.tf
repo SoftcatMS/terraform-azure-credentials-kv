@@ -4,7 +4,7 @@ terraform {
   backend "azurerm" {
     resource_group_name  = "rg-terraform-modules-state"
     storage_account_name = "softcatmodulestate"
-    container_name       = "tf-modules-azure-credentials-kv-basic"
+    container_name       = "tf-modules-azure-credentials-kv-advanced"
     key                  = "terraform.tfstate"
   }
 
@@ -12,6 +12,9 @@ terraform {
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "=2.97.0"
+    }
+    local = {
+      source = "hashicorp/local"
     }
   }
 }

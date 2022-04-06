@@ -38,7 +38,54 @@ module "vnet" {
   depends_on = [azurerm_resource_group.rg-vm-password-advanced]
 }
 
-module "linuxservers" {
+
+# To be replaced with refacored VM Module
+resource "azurerm_linux_virtual_machine" "test-adv" {
+  name                       = "linux-sshkey-advanced-vm"
+  location                   = azurerm_resource_group.rg-vm-password-advanced.location
+  resource_group_name        = azurerm_resource_group.rg-vm-password-advanced.name
+  network_interface_ids      = [azurerm_network_interface.test-adv.id]
+  allow_extension_operations = false
+  size                       = "Standard_B1ls"
+  computer_name              = "linux-sshkey-advanced-vm"
+  admin_username             = "azure_user"
+
+  disable_password_authentication = true
+
+  admin_ssh_key {
+    username   = "azure_user"
+    public_key = module.credentials.softcat_public_ssh_key
+  }
+
+  os_disk {
+    name                 = "os"
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "16.04-LTS"
+    version   = "latest"
+  }
+}
+
+
+resource "azurerm_network_interface" "test-adv" {
+  name                = "linux-sshkey-advanced-vm-nic"
+  location            = azurerm_resource_group.rg-vm-password-advanced.location
+  resource_group_name = azurerm_resource_group.rg-vm-password-advanced.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = module.vnet.vnet_subnets[0]
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+
+module "linuxserverspassword" {
   source              = "github.com/SoftcatMS/terraform-azure-vm"
   resource_group_name = azurerm_resource_group.rg-vm-password-advanced.name
   vm_size             = "Standard_B1ls"
@@ -51,3 +98,4 @@ module "linuxservers" {
 
   depends_on = [azurerm_resource_group.rg-vm-password-advanced]
 }
+
