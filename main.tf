@@ -7,7 +7,9 @@ resource "azurerm_resource_group" "kv-rg" {
 
 #Create KeyVault ID
 resource "random_string" "unique" {
-  length = 4
+  length  = 5
+  special = false
+  number  = true
 }
 
 locals {
