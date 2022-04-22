@@ -2,7 +2,7 @@
 
 # Test values
 
-resource_group1 = 'password-basic-kv-rg'
+resource_group1 = 'rg-test-kv-basic-resources'
 
 describe azure_resource_group(name: resource_group1) do
   it { should exist }

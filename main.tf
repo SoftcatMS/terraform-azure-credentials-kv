@@ -1,10 +1,5 @@
-resource "azurerm_resource_group" "kv-rg" {
-  name     = var.resource_group_name
-  location = var.location
-  tags     = var.tags
-}
 
-
+#Create KeyVault ID
 #Create KeyVault ID
 resource "random_string" "unique" {
   length  = 5
@@ -22,7 +17,6 @@ resource "azurerm_key_vault" "keyvault" {
   #checkov:skip=CKV_AZURE_42:Ensure the key vault is recoverable 
   #checkov:skip=CKV_AZURE_109:Ensure key vault allows firewall rules settings 
   #checkov:skip=CKV_AZURE_110:Ensure that key vault enables purge protection 
-  depends_on                  = [azurerm_resource_group.kv-rg]
   name                        = lower(join("", [var.key_vault_name, (local.suffix)]))
   location                    = var.location
   resource_group_name         = var.resource_group_name

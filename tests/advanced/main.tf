@@ -1,10 +1,16 @@
+resource "azurerm_resource_group" "rg-kv-test-advanced" {
+  name     = "rg-test-kv-advanced-resources"
+  location = "UK South"
+}
+
+
 module "credentials" {
   source = "../../"
 
   key_vault_name           = "adv-kv"
   random_suffix            = true
   location                 = "uksouth"
-  resource_group_name      = "password-advanced-kv-rg"
+  resource_group_name      = azurerm_resource_group.rg-kv-test-advanced.name
   purge_protection_enabled = false
 
   passwords = [
@@ -12,6 +18,9 @@ module "credentials" {
     { name = "password2" },
     { name = "web-2" },
   ]
+
+  depends_on = [azurerm_resource_group.rg-kv-test-advanced]
+
 
 }
 
