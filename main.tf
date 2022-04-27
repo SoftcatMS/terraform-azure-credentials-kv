@@ -23,7 +23,7 @@ resource "azurerm_key_vault_secret" "add_softcat_private_key" {
 
 resource "azurerm_key_vault_secret" "add_softcat_public_key" {
   #checkov:skip=CKV_AZURE_41:Ensure AKV secrets have an expiration date set
-  name         = "Softcat-Bastion-Public-Key-1"
+  name         = "Softcat-Bastion-Public-Key"
   value        = tls_private_key.softcat_key.public_key_openssh
   content_type = "ssh-key"
   key_vault_id = data.azurerm_key_vault.softcat.id
