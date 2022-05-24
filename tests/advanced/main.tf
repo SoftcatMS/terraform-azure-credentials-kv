@@ -92,63 +92,59 @@ module "vnet" {
 }
 
 
-# To be replaced with refactored VM Module
-resource "azurerm_linux_virtual_machine" "test-adv" {
-  name                       = "linux-sshkey-test-adv-vm"
-  location                   = azurerm_resource_group.rg-kv-test-adv.location
-  resource_group_name        = azurerm_resource_group.rg-kv-test-adv.name
-  network_interface_ids      = [azurerm_network_interface.test-adv.id]
-  allow_extension_operations = false
-  size                       = "Standard_B1ls"
-  computer_name              = "linux-sshkey-test-adv-vm"
-  admin_username             = "azure_user"
-
+module "linuxserver1" {
+  source                          = "github.com/SoftcatMS/terraform-azure-vm/modules/linux-vm"
+  name                            = "linux-sshkey-test-adv-vm"
+  resource_group_name             = azurerm_resource_group.rg-kv-test-adv.name
+  location                        = azurerm_resource_group.rg-kv-test-adv.location
+  virtual_machine_size            = "Standard_B1ls"
   disable_password_authentication = true
+  enable_public_ip                = true
+  public_ip_dns                   = "linuxsshtestadvvmips" // change to a unique name per datacenter region
+  vnet_subnet_id                  = module.vnet.vnet_subnets[0]
+  enable_accelerated_networking   = false
+  admin_ssh_key                   = module.credentials.softcat_public_ssh_key
 
-  admin_ssh_key {
-    username   = "azure_user"
-    public_key = module.credentials.softcat_public_ssh_key
-  }
-
-  os_disk {
-    name                 = "os"
+  os_disk = [{
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
-  }
+  }]
 
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "16.04-LTS"
-    version   = "latest"
-  }
-}
+  source_image_publisher = "Canonical"
+  source_image_offer     = "UbuntuServer"
+  source_image_sku       = "16.04-LTS"
+  source_image_version   = "latest"
 
-
-resource "azurerm_network_interface" "test-adv" {
-  name                = "linux-sshkey-test-adv-vm-nic"
-  location            = azurerm_resource_group.rg-kv-test-adv.location
-  resource_group_name = azurerm_resource_group.rg-kv-test-adv.name
-
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = module.vnet.vnet_subnets[0]
-    private_ip_address_allocation = "Dynamic"
-  }
-}
-
-
-module "linuxserverspassword" {
-  source              = "github.com/SoftcatMS/terraform-azure-vm"
-  resource_group_name = azurerm_resource_group.rg-kv-test-adv.name
-  vm_size             = "Standard_B1ls"
-  vm_hostname         = "linux-password-test-adv-vm"
-  admin_password      = module.credentials.passwords["web-2"]
-  vm_os_simple        = "UbuntuServer"
-  public_ip_dns       = ["linuxpwdtestadvvmips"] // change to a unique name per datacenter region
-  vnet_subnet_id      = module.vnet.vnet_subnets[0]
-  enable_ssh_key      = false
 
   depends_on = [azurerm_resource_group.rg-kv-test-adv]
 }
 
+
+
+
+module "linuxserver2" {
+  source                          = "github.com/SoftcatMS/terraform-azure-vm/modules/linux-vm"
+  name                            = "linux-password-test-adv-vm"
+  resource_group_name             = azurerm_resource_group.rg-kv-test-adv.name
+  location                        = azurerm_resource_group.rg-kv-test-adv.location
+  virtual_machine_size            = "Standard_B1ls"
+  disable_password_authentication = false
+  admin_password                  = module.credentials.passwords["password1"]
+  enable_public_ip                = true
+  public_ip_dns                   = "linuxpwdtestadvvmips" // change to a unique name per datacenter region
+  vnet_subnet_id                  = module.vnet.vnet_subnets[0]
+  enable_accelerated_networking   = false
+
+  os_disk = [{
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }]
+
+  source_image_publisher = "Canonical"
+  source_image_offer     = "UbuntuServer"
+  source_image_sku       = "16.04-LTS"
+  source_image_version   = "latest"
+
+
+  depends_on = [azurerm_resource_group.rg-kv-test-adv]
+}
