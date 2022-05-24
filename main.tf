@@ -35,9 +35,10 @@ resource "azurerm_key_vault_secret" "add_softcat_public_key" {
 }
 
 resource "random_password" "gen_password" {
-  count   = length(var.passwords)
-  length  = 20
-  special = true
+  count            = length(var.passwords)
+  length           = 20
+  special          = true
+  override_special = "!#$%&*-_=+<>:?"
 }
 
 resource "azurerm_key_vault_secret" "add_password" {

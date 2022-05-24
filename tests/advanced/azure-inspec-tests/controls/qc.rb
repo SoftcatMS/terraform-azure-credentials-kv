@@ -29,6 +29,6 @@ describe azure_virtual_machine(resource_group: resource_group1, name: 'linux-ssh
   it { should exist }
 end
 
-describe azure_virtual_machine(resource_group: resource_group1, name: 'linux-password-test-adv-vm-vmLinux-0') do
+describe azure_virtual_machine(resource_group: resource_group1, name: 'linux-password-test-adv-vm') do
   it { should exist }
 end
