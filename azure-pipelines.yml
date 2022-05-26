@@ -183,7 +183,7 @@ stages:
           backendAzureRmStorageAccountName: 'softcatmodulestate'
           backendAzureRmContainerName: 'tf-modules-azure-credentials-kv-basic'
           backendAzureRmKey: 'terraform.tfstate'
-
+ 
       - task: TerraformTaskV2@2
         displayName: Destroy Basic
         inputs:
