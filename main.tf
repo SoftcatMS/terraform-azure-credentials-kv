@@ -15,10 +15,11 @@ resource "azurerm_key_vault_secret" "add_softcat_private_key" {
   content_type = "ssh-key"
   key_vault_id = data.azurerm_key_vault.softcat.id
 
+  depends_on = [tls_private_key.softcat_key]
+
   lifecycle {
     ignore_changes = [value] #Ignore so that key can be handled via console. This is used for initial deployment
   }
-  depends_on = [tls_private_key.softcat_key]
 }
 
 resource "azurerm_key_vault_secret" "add_softcat_public_key" {
@@ -28,10 +29,11 @@ resource "azurerm_key_vault_secret" "add_softcat_public_key" {
   content_type = "ssh-key"
   key_vault_id = data.azurerm_key_vault.softcat.id
 
+  depends_on = [tls_private_key.softcat_key]
+
   lifecycle {
     ignore_changes = [value] #Ignore so that key can be handled via console. This is used fo rinitial deployment
   }
-  depends_on = [tls_private_key.softcat_key]
 }
 
 resource "random_password" "gen_password" {
@@ -40,7 +42,7 @@ resource "random_password" "gen_password" {
   min_lower        = 1
   min_upper        = 1
   special          = true
-  override_special = "!#$%&*-_=+"
+  override_special = "!#$%*-_=+"
 }
 
 resource "azurerm_key_vault_secret" "add_password" {
@@ -50,7 +52,8 @@ resource "azurerm_key_vault_secret" "add_password" {
   value        = random_password.gen_password[count.index].result
   content_type = "password"
   key_vault_id = data.azurerm_key_vault.softcat.id
-  depends_on   = [random_password.gen_password]
+
+  depends_on = [random_password.gen_password]
 
   lifecycle {
     ignore_changes = [value]
