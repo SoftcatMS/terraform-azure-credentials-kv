@@ -10,8 +10,7 @@ terraform {
 
   required_providers {
     azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "=2.97.0"
+      source = "hashicorp/azurerm"
     }
   }
 }
@@ -19,5 +18,9 @@ terraform {
 
 # Configure the Microsoft Azure Provider
 provider "azurerm" {
-  features {}
+  features {
+    key_vault {
+      purge_soft_delete_on_destroy = true
+    }
+  }
 }

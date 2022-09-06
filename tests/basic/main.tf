@@ -29,7 +29,6 @@ resource "azurerm_key_vault" "kv-test-basic" {
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   soft_delete_retention_days  = 7
   purge_protection_enabled    = false
-  soft_delete_enabled         = false
   sku_name                    = "standard"
 
   access_policy {
@@ -64,7 +63,7 @@ module "credentials" {
 
   passwords = [
     { name = "password1" },
-    { name = "password3" }
+    { name = "password2" }
   ]
 
   depends_on = [azurerm_key_vault.kv-test-basic]
