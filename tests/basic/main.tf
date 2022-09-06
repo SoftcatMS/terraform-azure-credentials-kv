@@ -63,7 +63,7 @@ module "credentials" {
 
   passwords = [
     { name = "password1" },
-    { name = "password3" }
+    { name = "password2" }
   ]
 
   depends_on = [azurerm_key_vault.kv-test-basic]
