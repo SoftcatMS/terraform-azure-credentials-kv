@@ -1,3 +1,8 @@
+resource "azurerm_resource_group" "rg-example-vms" {
+  name     = "rg-example-vms-resources"
+  location = "UK South"
+}
+
 
 module "credentials" {
   source = "github.com/SoftcatMS/terraform-azure-credentials-kv"
@@ -5,67 +10,50 @@ module "credentials" {
   key_vault_name      = "My_Exiting_KeyVault"
   resource_group_name = "My_Exiting_KeyVault_ResourceGroup"
   passwords = [
-    { name = "web-1" },
-    { name = "web-2" },
+    { name = "linux-example-vm-1" },
+    { name = "win-example-vm-2" },
     { name = "app-1" },
     { name = "db-1" }
   ]
 }
 
-# This example needs to be updated to Softcat VM module once VM Module refactored (26/04/22)
-resource "azurerm_linux_virtual_machine" "test-adv" {
-  name                       = "web-1"
-  location                   = "uksouth"
-  resource_group_name        = "my_resource_group_name"
-  network_interface_ids      = "nic_id"
-  allow_extension_operations = false
-  size                       = "Standard_B1ls"
-  computer_name              = "web-1"
-  admin_username             = "azure_user"
 
-  disable_password_authentication = true
+module "linuxserverexample" {
+  source                          = "github.com/SoftcatMS/terraform-azure-vm/modules/linux-vm"
+  name                            = "linux-example-vm-1"
+  resource_group_name             = azurerm_resource_group.rg-example-vms.name
+  location                        = azurerm_resource_group.rg-example-vms.location
+  virtual_machine_size            = "Standard_B1ls"
+  disable_password_authentication = false
+  admin_password                  = module.credentials.passwords["linux-example-vm-1"]
+  enable_public_ip                = true
+  public_ip_dns                   = "linuxpwdtestadvvmips" // change to a unique name per datacenter region
+  vnet_subnet_id                  = module.vnet.vnet_subnets[0]
+  enable_accelerated_networking   = false
 
-  admin_ssh_key {
-    username   = "azure_user"
-    public_key = module.credentials.softcat_public_ssh_key # Default output from terraform-azure-credentials-kv Module
-  }
-
-  os_disk {
-    name                 = "os"
+  os_disk = [{
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
-  }
+  }]
 
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "16.04-LTS"
-    version   = "latest"
-  }
+  source_image_publisher = "Canonical"
+  source_image_offer     = "UbuntuServer"
+  source_image_sku       = "16.04-LTS"
+  source_image_version   = "latest"
+
+
+  depends_on = [azurerm_resource_group.rg-kv-test-adv]
 }
 
 
-resource "azurerm_network_interface" "test-adv" {
-  name                = "web-2-nic"
-  location            = azurerm_resource_group.rg-kv-test-adv.location
-  resource_group_name = azurerm_resource_group.rg-kv-test-adv.name
-
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = module.vnet.vnet_subnets[0]
-    private_ip_address_allocation = "Dynamic"
-  }
-}
-
-
-module "web-2" {
+module "windowsserverexample2" {
   source              = "github.com/SoftcatMS/terraform-azure-vm"
   resource_group_name = azurerm_resource_group.rg-kv-test-adv.name
   vm_size             = "Standard_B1ls"
-  vm_hostname         = "web-2"
-  admin_password      = module.credentials.passwords["web-2"] # Output from terraform-azure-credentials-kv Module
+  vm_hostname         = "win-example-vm-2"
+  admin_password      = module.credentials.passwords["win-example-vm-2"] # Output from terraform-azure-credentials-kv Module
   vm_os_simple        = "UbuntuServer"
-  public_ip_dns       = ["linuxpwdtestadvvmips"] // change to a unique name per datacenter region
+  public_ip_dns       = ["windowspwdtestadvvmips"] // change to a unique name per datacenter region
   vnet_subnet_id      = module.vnet.vnet_subnets[0]
   enable_ssh_key      = false
 
