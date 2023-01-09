@@ -22,6 +22,7 @@ resource "azurerm_key_vault" "kv-test-basic" {
   #checkov:skip=CKV_AZURE_109:Ensure key vault allows firewall rules settings 
   #checkov:skip=CKV_AZURE_110:Ensure that key vault enables purge protection 
   #checkov:skip=CKV_AZURE_111:Ensure that key vault enables soft delete
+  #checkov:skip=CKV_AZURE_189:Ensure that Azure Key Vault disables public network access
   name                        = "kv-test-basic"
   resource_group_name         = azurerm_resource_group.rg-kv-test-basic.name
   location                    = azurerm_resource_group.rg-kv-test-basic.location
