@@ -4,14 +4,16 @@ data "azurerm_key_vault" "softcat" {
 }
 
 resource "tls_private_key" "softcat_key" {
+  count     = var.create_bastion_softcat_ssh_key == true ? 1 : 0
   algorithm = "RSA"
   rsa_bits  = "4096"
 }
 
 resource "azurerm_key_vault_secret" "add_softcat_private_key" {
   #checkov:skip=CKV_AZURE_41:Ensure AKV secrets have an expiration date set
-  name         = "Softcat-Bastion-Private-Key"
-  value        = tls_private_key.softcat_key.private_key_openssh
+  count        = var.create_bastion_softcat_ssh_key == true ? 1 : 0
+  name         = join("-", [var.bastion_softcat_ssh_key_name, ("Private-Key")])
+  value        = tls_private_key.softcat_key[0].private_key_openssh
   content_type = "ssh-key"
   key_vault_id = data.azurerm_key_vault.softcat.id
 
@@ -24,8 +26,9 @@ resource "azurerm_key_vault_secret" "add_softcat_private_key" {
 
 resource "azurerm_key_vault_secret" "add_softcat_public_key" {
   #checkov:skip=CKV_AZURE_41:Ensure AKV secrets have an expiration date set
-  name         = "Softcat-Bastion-Public-Key"
-  value        = tls_private_key.softcat_key.public_key_openssh
+  count        = var.create_bastion_softcat_ssh_key == true ? 1 : 0
+  name         = join("-", [var.bastion_softcat_ssh_key_name, ("Public-Key")])
+  value        = tls_private_key.softcat_key[0].public_key_openssh
   content_type = "ssh-key"
   key_vault_id = data.azurerm_key_vault.softcat.id
 

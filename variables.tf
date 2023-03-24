@@ -21,3 +21,16 @@ variable "passwords" {
   }))
   default = []
 }
+
+variable "create_bastion_softcat_ssh_key" {
+  description = "Create Softcat SSH key pair for Bastion"
+  type        = bool
+  default     = false
+}
+
+
+variable "bastion_softcat_ssh_key_name" {
+  description = "Softcat SSH key for Bastion Name"
+  type        = string
+  default     = "Softcat-Bastion"
+}
