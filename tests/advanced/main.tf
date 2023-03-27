@@ -23,6 +23,7 @@ resource "azurerm_key_vault" "kv-test-adv" {
   #checkov:skip=CKV_AZURE_110:Ensure that key vault enables purge protection 
   #checkov:skip=CKV_AZURE_111:Ensure that key vault enables soft delete
   #checkov:skip=CKV_AZURE_189:Ensure that Azure Key Vault disables public network access
+  #checkov:skip=CKV2_AZURE_32:Ensure private endpoint is configured to key vault
   name                        = "kv-test-adv"
   resource_group_name         = azurerm_resource_group.rg-kv-test-adv.name
   location                    = azurerm_resource_group.rg-kv-test-adv.location
@@ -59,8 +60,10 @@ resource "azurerm_key_vault" "kv-test-adv" {
 module "credentials" {
   source = "../../"
 
-  key_vault_name      = azurerm_key_vault.kv-test-adv.name
-  resource_group_name = azurerm_resource_group.rg-kv-test-adv.name
+  key_vault_name                 = azurerm_key_vault.kv-test-adv.name
+  resource_group_name            = azurerm_resource_group.rg-kv-test-adv.name
+  create_bastion_softcat_ssh_key = true
+  bastion_softcat_ssh_key_name   = "Softcat-Bastion-Adv"
 
   passwords = [
     { name = "password1" },
@@ -103,7 +106,7 @@ module "linuxserver1" {
   public_ip_dns                   = "linuxsshtestadvvmips" // change to a unique name per datacenter region
   vnet_subnet_id                  = module.vnet.vnet_subnets[0]
   enable_accelerated_networking   = false
-  admin_ssh_key                   = module.credentials.softcat_public_ssh_key
+  admin_ssh_key                   = module.credentials.softcat_public_ssh_key[0]
 
   os_disk = [{
     caching              = "ReadWrite"

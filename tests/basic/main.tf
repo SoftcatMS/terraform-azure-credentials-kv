@@ -23,6 +23,7 @@ resource "azurerm_key_vault" "kv-test-basic" {
   #checkov:skip=CKV_AZURE_110:Ensure that key vault enables purge protection 
   #checkov:skip=CKV_AZURE_111:Ensure that key vault enables soft delete
   #checkov:skip=CKV_AZURE_189:Ensure that Azure Key Vault disables public network access
+  #checkov:skip=CKV2_AZURE_32:Ensure private endpoint is configured to key vault
   name                        = "kv-test-basic"
   resource_group_name         = azurerm_resource_group.rg-kv-test-basic.name
   location                    = azurerm_resource_group.rg-kv-test-basic.location
@@ -56,15 +57,34 @@ resource "azurerm_key_vault" "kv-test-basic" {
 }
 
 
-module "credentials" {
+module "credentials-no-ssh-key" {
   source = "../../"
 
-  key_vault_name      = azurerm_key_vault.kv-test-basic.name
-  resource_group_name = azurerm_resource_group.rg-kv-test-basic.name
+  key_vault_name                 = azurerm_key_vault.kv-test-basic.name
+  resource_group_name            = azurerm_resource_group.rg-kv-test-basic.name
+  create_bastion_softcat_ssh_key = false
 
   passwords = [
     { name = "password1" },
     { name = "password2" }
+  ]
+
+  depends_on = [azurerm_key_vault.kv-test-basic]
+
+}
+
+
+module "credentials-with-ssh-key" {
+  source = "../../"
+
+  key_vault_name                 = azurerm_key_vault.kv-test-basic.name
+  resource_group_name            = azurerm_resource_group.rg-kv-test-basic.name
+  create_bastion_softcat_ssh_key = true
+  bastion_softcat_ssh_key_name   = "Softcat-Bastion-Basic"
+
+  passwords = [
+    { name = "password3" },
+    { name = "password4" }
   ]
 
   depends_on = [azurerm_key_vault.kv-test-basic]

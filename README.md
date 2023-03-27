@@ -63,6 +63,8 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_bastion_softcat_ssh_key_name"></a> [bastion\_softcat\_ssh\_key\_name](#input\_bastion\_softcat\_ssh\_key\_name) | Softcat SSH key for Bastion Name | `string` | `"Softcat-Bastion"` | no |
+| <a name="input_create_bastion_softcat_ssh_key"></a> [create\_bastion\_softcat\_ssh\_key](#input\_create\_bastion\_softcat\_ssh\_key) | Create Softcat SSH key pair for Bastion | `bool` | `false` | no |
 | <a name="input_key_vault_name"></a> [key\_vault\_name](#input\_key\_vault\_name) | Key Vault Name. | `string` | n/a | yes |
 | <a name="input_passwords"></a> [passwords](#input\_passwords) | List resources that require a random password. | <pre>list(object({<br>    name = string,<br>  }))</pre> | `[]` | no |
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | Resource Group Name for Key Vault | `string` | n/a | yes |
