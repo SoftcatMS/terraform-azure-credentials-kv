@@ -45,7 +45,7 @@ resource "random_password" "gen_password" {
   min_lower        = 1
   min_upper        = 1
   special          = true
-  override_special = "!#$%*-_=+"
+  override_special = "!#*-_=+"
 }
 
 resource "azurerm_key_vault_secret" "add_password" {
